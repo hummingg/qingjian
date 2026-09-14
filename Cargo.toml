@@ -4,6 +4,7 @@ members = [
     "crates/qingjian-core",
     "crates/qingjian-dictionary",
     "crates/qingjian-translate",
+    "crates/qingjian-coach",
     "crates/qingjian-learning",
     "crates/qingjian-platform",
     "crates/qingjian-predict",
@@ -27,6 +28,7 @@ all = "warn"
 qingjian-core = { path = "crates/qingjian-core" }
 qingjian-dictionary = { path = "crates/qingjian-dictionary" }
 qingjian-translate = { path = "crates/qingjian-translate" }
+qingjian-coach = { path = "crates/qingjian-coach" }
 qingjian-learning = { path = "crates/qingjian-learning" }
 qingjian-platform = { path = "crates/qingjian-platform" }
 qingjian-predict = { path = "crates/qingjian-predict" }

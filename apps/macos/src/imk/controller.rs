@@ -73,6 +73,8 @@ define_class!(
                 host::with(|h| {
                     h.cancel_prediction();
                     h.window.hide();
+                    // 焦点走了，手头的半句当完结发出去
+                    h.coach_break();
                 });
             });
             if done.is_none() {
@@ -127,6 +129,7 @@ define_class!(
                 host::with(|h| {
                     h.cancel_prediction();
                     h.window.hide();
+                    h.coach_hide();
                     h.indicator.deactivate();
                     h.watch.stop();
                     h.engine.break_chain();
@@ -546,6 +549,8 @@ impl QingjianInputController {
         match host::with(|h| h.engine.punctuate(c)).flatten() {
             Some(full_width) => {
                 client.insert_text(full_width);
+                // 句末标点也是一句中文的一部分：喂进去，强触发就完结这句
+                host::with(|h| h.coach_commit(full_width));
                 true
             }
             None => {
@@ -565,13 +570,18 @@ impl QingjianInputController {
             // 按词 / 按行删的数不清删了几个字，撤销的账就不记了
             if selector == sel!(deleteBackward:) {
                 host::with(|h| h.engine.note_backspace());
+                // 组句外的退格：句子上下文同步删一个字
+                host::with(|h| h.coach_backspace());
             } else if selector == sel!(deleteWordBackward:)
                 || selector == sel!(deleteToBeginningOfLine:)
             {
                 host::with(|h| h.engine.break_chain());
+                // 删掉多少字数不清，句子上下文整句作废
+                host::with(|h| h.coach_reset());
             } else if selector == sel!(insertNewline:) {
                 // 回车交给应用：文本流里是一个段落边界
                 host::with(|h| h.engine.note_passthrough('\n'));
+                host::with(|h| h.coach_break());
             }
             return false;
         }
@@ -595,6 +605,8 @@ impl QingjianInputController {
             return selector == sel!(insertNewline:);
         } else if selector == sel!(insertNewline:) {
             self.commit_raw(client);
+            // 回车把这句话交给了应用：手头的半句当完结发出去
+            host::with(|h| h.coach_break());
         } else if selector == sel!(cancelOperation:) || selector == sel!(complete:) {
             // TextEdit 等应用把 Esc 绑成 complete:（自动补全），也当作取消
             host::with(|h| {
@@ -774,6 +786,7 @@ impl QingjianInputController {
         host::with(|h| h.engine.accept_prediction(&text));
         tracing::debug!(%text, "接受整句补全");
         client.insert_text(&text);
+        host::with(|h| h.coach_commit(&text));
         self.refresh(client);
         true
     }
@@ -830,6 +843,7 @@ impl QingjianInputController {
         };
         tracing::debug!(%text, "commit");
         client.insert_text(&text);
+        host::with(|h| h.coach_commit(&text));
         self.refresh(client);
         true
     }
@@ -844,6 +858,7 @@ impl QingjianInputController {
         }
         tracing::debug!(%raw, "commit raw");
         client.insert_text(&raw);
+        host::with(|h| h.coach_commit(&raw));
         self.refresh(client);
         true
     }

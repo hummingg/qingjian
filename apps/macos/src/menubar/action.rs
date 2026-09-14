@@ -16,6 +16,9 @@ pub enum MenuAction {
     /// 打开偏好设置窗口。
     OpenPreferences,
 
+    /// 打开 English Coach 复习窗口。
+    OpenReview,
+
     /// 在访达里打开日志目录。
     OpenLogs,
 }
@@ -26,6 +29,7 @@ impl MenuAction {
             Self::ToggleCloud => 1,
             Self::OpenPreferences => 2,
             Self::OpenLogs => 3,
+            Self::OpenReview => 4,
             Self::ToggleFuzzy(index) => FUZZY_TAG_BASE + index as NSInteger,
         }
     }
@@ -35,6 +39,7 @@ impl MenuAction {
             1 => Self::ToggleCloud,
             2 => Self::OpenPreferences,
             3 => Self::OpenLogs,
+            4 => Self::OpenReview,
             _ => {
                 let index = usize::try_from(tag.checked_sub(FUZZY_TAG_BASE)?).ok()?;
                 (index < FuzzyRules::NAMES.len()).then_some(Self::ToggleFuzzy(index))?
@@ -52,6 +57,7 @@ mod tests {
         let all = [
             MenuAction::ToggleCloud,
             MenuAction::OpenPreferences,
+            MenuAction::OpenReview,
             MenuAction::OpenLogs,
             MenuAction::ToggleFuzzy(0),
             MenuAction::ToggleFuzzy(FuzzyRules::NAMES.len() - 1),

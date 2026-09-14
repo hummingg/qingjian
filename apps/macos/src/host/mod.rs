@@ -7,6 +7,7 @@
 
 mod cloud;
 mod cloud_test_monitor;
+mod coach;
 mod config;
 mod config_watch;
 mod diagnostics;
@@ -28,12 +29,13 @@ use std::path::PathBuf;
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSPasteboard, NSPasteboardTypeString};
 use objc2_foundation::{NSProcessInfo, NSRect, NSString};
+use qingjian_coach::{CoachConfig, CoachService, SentenceContext};
 use qingjian_core::{
     Candidate, CandidateKind, Cell, CloudWord, EmojiTable, Engine, FuzzyRules, Language, ModeKeys,
     NoGlossFiller, NoInputLogger, NoPredictor, Prediction, ShuangpinScheme,
 };
 use qingjian_dictionary::{Dictionary, WordList};
-use qingjian_learning::{FrequencyLearner, InputLog, UsageStats, VocabularyBook};
+use qingjian_learning::{FrequencyLearner, InputLog, PhraseBook, UsageStats, VocabularyBook};
 use qingjian_lm::BigramModel;
 use qingjian_platform::extra_dictionaries;
 use qingjian_platform::{
@@ -49,9 +51,11 @@ use qingjian_translate::{Glossary, LayeredTranslator, LevelTable, PersonalGlossa
 use crate::app::BundleInfo;
 use crate::app::{Settings, logging, paths};
 use crate::candidates::{CandidateWindow, Frame, Preedit, Row};
+use crate::coach::{CoachFrame, CoachPanel};
 use crate::error::HostError;
 use crate::menubar::{InputMenu, MenuAction, ModeIndicator};
 use crate::preferences::{PreferencesWindow, Setting, SettingValue};
+use crate::review::ReviewWindow;
 
 use cloud_test_monitor::CloudTestMonitor;
 use config_watch::ConfigWatch;
@@ -77,6 +81,9 @@ pub struct Host {
 
     /// 偏好设置窗口。
     pub preferences: PreferencesWindow,
+
+    /// English Coach 复习窗口。
+    pub review: ReviewWindow,
 
     /// 配置文件的当前值与修改时间。
     pub settings: Settings,
@@ -159,6 +166,27 @@ pub struct Host {
     /// 本地整句模型的防抖与轮询定时器。
     rescore: RescoreMonitor,
 
+    /// English Coach 服务（配置 `[coach]` 开着才有）；`None` 时 coach_* 全是空操作。
+    pub coach: Option<CoachService>,
+
+    /// 正在累积的中文句子与版本号：上屏的中文喂进来，防旧 AI 结果覆新靠它。
+    coach_context: SentenceContext,
+
+    /// 候选窗下方的英文面板。
+    pub coach_panel: CoachPanel,
+
+    /// English Coach 结果的轮询定时器。
+    coach_monitor: coach::CoachMonitor,
+
+    /// 当前套用的 `[coach]`；变了才重建服务。
+    applied_coach: CoachConfig,
+
+    /// 面板当前显示的英文；候选窗重画时按它重新定位。
+    coach_frame: Option<CoachFrame>,
+
+    /// English Coach 短语的学习记录与 SRS 调度；面板上看到短语就记一次曝光。
+    pub phrase_book: PhraseBook,
+
     /// 正在后台加载的模型；加载完接到 Engine 上就清掉。
     model_loader: Option<
         std::sync::mpsc::Receiver<
@@ -191,6 +219,9 @@ const USAGE_FILE: &str = "usage.tsv";
 
 /// 词汇记录文件名，与学习数据同目录（一个译词一行，见 `qingjian-learning::VocabularyBook`）。
 const VOCABULARY_FILE: &str = "user-vocab.tsv";
+
+/// English Coach 短语本文件名，与学习数据同目录（一个短语一行，见 `qingjian-learning::PhraseBook`）。
+const PHRASE_FILE: &str = "coach-phrases.tsv";
 
 /// 可能打进包里的释义表语言，按这个顺序在设置里列出；文件不存在的不列。
 const GLOSSARY_LANGUAGES: [Language; 2] = [Language::English, Language::Japanese];

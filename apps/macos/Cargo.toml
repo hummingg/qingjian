@@ -13,6 +13,7 @@ objc2-foundation.workspace = true
 objc2-input-method-kit.workspace = true
 objc2-core-foundation.workspace = true
 qingjian-core.workspace = true
+qingjian-coach.workspace = true
 qingjian-dictionary.workspace = true
 qingjian-learning.workspace = true
 qingjian-platform.workspace = true

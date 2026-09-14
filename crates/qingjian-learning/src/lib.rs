@@ -7,11 +7,13 @@
 mod error;
 mod frequency_learner;
 mod input_log;
+mod phrase_book;
 mod usage_stats;
 mod vocabulary_book;
 
 pub use error::LearningError;
 pub use frequency_learner::FrequencyLearner;
 pub use input_log::InputLog;
+pub use phrase_book::PhraseBook;
 pub use usage_stats::UsageStats;
 pub use vocabulary_book::VocabularyBook;

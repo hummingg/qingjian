@@ -75,6 +75,16 @@ impl CandidateWindow {
         self.panel.orderOut(None);
     }
 
+    /// 窗口当前可见吗。
+    pub fn is_visible(&self) -> bool {
+        self.panel.isVisible()
+    }
+
+    /// 窗口在屏幕上的矩形。English Coach 面板要贴在它下方。
+    pub fn frame(&self) -> NSRect {
+        self.panel.frame()
+    }
+
     /// 排到最前，并确认真在当前 Space 上；不在就换一块新面板。
     ///
     /// collection behavior 是「所有 Space + 全屏辅助」，可 macOS 26 上 WindowServer 只把面板绑到它创建时已有的 Space：

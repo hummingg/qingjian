@@ -15,6 +15,7 @@ README.md 只介绍项目，所有技术内容放在这里，分四类：前三�
 | [contributing.md](contributing.md) | 开发约定：架构约束短版、代码组织、版本号、提交信息、文档同步、提交前检查、发版与外部 PR 流程（CLAUDE.md 直接载入它） |
 | [design/architecture.md](design/architecture.md) | Core 与平台层的划分、crate 结构、必须遵守的架构约束、`.qj` 数据容器 |
 | [design/candidate-ui.md](design/candidate-ui.md) | 候选窗口、按键约定与翻译 annotation 的设计 |
+| [design/english-coach.md](design/english-coach.md) | English Coach 二次开发的技术设计：SentenceContext、AI Provider、英文面板、LearningPhrase / SRS 的分层与 MVP 范围 |
 | [design/landscape.md](design/landscape.md) | 同类项目（水杉、Rime）、可用数据源及其许可 |
 | [plan/roadmap.md](plan/roadmap.md) | 分阶段路线图、各阶段的依赖关系与已完成项 |
 | [plan/zh_tw_support_plan.md](plan/zh_tw_support_plan.md) | 繁体输出与台湾注音支持的分析与方案（贡献者 pinchiu，#22）：读音标准差异、台湾用语、简转繁一对多；两条路线 |

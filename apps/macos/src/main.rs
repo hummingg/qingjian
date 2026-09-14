@@ -7,11 +7,13 @@
 
 mod app;
 mod candidates;
+mod coach;
 mod error;
 mod host;
 mod imk;
 mod menubar;
 mod preferences;
+mod review;
 
 use objc2::{AnyThread, ClassType, MainThreadMarker};
 use objc2_app_kit::NSApplication;

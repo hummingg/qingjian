@@ -31,6 +31,8 @@ impl Host {
         self.apps = config.apps.clone();
         self.window.set_theme(config.general.theme);
         self.window.set_layout(config.general.layout);
+        self.coach_panel.set_theme(config.general.theme);
+        self.apply_coach(&config.coach);
         self.apply_learning_language(&config.general.learning_language);
         if self.input_log_enabled != Some(config.general.input_log) {
             self.input_log_enabled = Some(config.general.input_log);
@@ -133,6 +135,9 @@ impl Host {
         }
         if self.last_flush.elapsed() >= LEARNING_FLUSH_INTERVAL {
             self.engine.flush_learning();
+            if let Err(error) = self.phrase_book.save() {
+                tracing::warn!(%error, "English Coach 短语本保存失败");
+            }
             self.last_flush = std::time::Instant::now();
         }
     }

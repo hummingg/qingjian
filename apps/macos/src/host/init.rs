@@ -66,6 +66,10 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             .with_usage_meter(Box::new(UsageStats::open(dir.join(USAGE_FILE))))
             .with_vocabulary_tracker(Box::new(vocabulary));
     }
+    // English Coach 短语本：有数据目录就落盘，没有就只在内存里记
+    let phrase_book = paths::user_data_dir()
+        .map(|dir| PhraseBook::open(dir.join(PHRASE_FILE)))
+        .unwrap_or_else(PhraseBook::in_memory);
     // 附加词库：随包的领域词库 + 用户目录 dicts/ 下的文件
     engine.set_extra_dictionaries(extra_dictionaries::load(
         paths::bundled_dicts_dir().as_deref(),
@@ -125,6 +129,7 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             indicator,
             menu,
             preferences,
+            review: ReviewWindow::new(mtm),
             settings,
             watch,
             last_flush: std::time::Instant::now(),
@@ -152,6 +157,13 @@ pub fn init(mtm: MainThreadMarker, info: &BundleInfo) -> Result<(), HostError> {
             cloud_test: None,
             cloud_test_monitor: CloudTestMonitor::new(mtm),
             rescore: RescoreMonitor::new(mtm),
+            coach: None,
+            coach_context: SentenceContext::default(),
+            coach_panel: CoachPanel::new(mtm),
+            coach_monitor: coach::CoachMonitor::new(mtm),
+            applied_coach: CoachConfig::default(),
+            coach_frame: None,
+            phrase_book,
             model_loader: None,
             applied_model: None,
             session: Session::default(),

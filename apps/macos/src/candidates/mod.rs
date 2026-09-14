@@ -4,7 +4,7 @@ mod cloud_icon;
 mod frame;
 mod preedit;
 mod row;
-mod theme;
+pub(crate) mod theme;
 mod view;
 mod window;
 

@@ -13,6 +13,7 @@ mod theme_mode;
 
 use std::path::Path;
 
+use qingjian_coach::CoachConfig;
 use qingjian_core::FuzzyRules;
 use qingjian_predict::PredictConfig;
 use serde::{Deserialize, Serialize};
@@ -63,6 +64,9 @@ pub struct Config {
 
     /// 云联想。
     pub predict: PredictConfig,
+
+    /// English Coach：上屏的中文句子换取地道英文表达。
+    pub coach: CoachConfig,
 
     /// 悬浮状态条（桌面上常驻、可拖动的中 / 英浮窗）。
     pub status_bar: StatusBarConfig,
@@ -245,6 +249,28 @@ lookahead = 32
 slots = 2
 # 组句中除了词候选还要不要整句补全（preedit 右侧，Tab 接受）
 sentence = true
+
+[coach]
+# English Coach：上屏的中文句子发到下面的接口，换一句母语者会自然说出的英文，常驻显示在候选窗下方。
+# 只发当前句子和上一句的结尾，不发输入历史；密码框（Secure Input）里绝不发送。默认关闭。
+enabled = false
+# OpenAI 兼容接口地址与模型名
+base_url = "https://api.deepseek.com"
+model = "deepseek-v4-flash"
+# 推理强度（reasoning_effort）：none 关掉模型的思考，教练要的是快；留空则不发这个参数
+reasoning_effort = "none"
+# 密钥：填在这里，或留空并设置 api_key_env 指定的环境变量
+# api_key = ""
+api_key_env = "QINGJIAN_COACH_API_KEY"
+# 单次请求超时（毫秒）；上屏后停止变化多久才发请求（毫秒）
+timeout_ms = 8000
+debounce_ms = 800
+# 给模型看的前一句最多多少个字符——这是发往云端的上文上限
+previous_chars = 64
+# 你的英语水平（A1–C2）：模型按这个控制用词难度；留空按 B1
+level = ""
+# 一句话最多提示几条值得学的短语
+max_phrases = 2
 
 [status_bar]
 # 桌面上常驻、可拖动的悬浮状态条（Windows）：「中 / 英」格点一下切换模式（开着双拼时还显示方案名）、「，。」格切全角 / 半角标点、齿轮打开设置。

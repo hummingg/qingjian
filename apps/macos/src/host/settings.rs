@@ -73,6 +73,10 @@ impl Host {
                 );
                 self.preferences.show();
             }
+            MenuAction::OpenReview => {
+                let due = self.phrase_book.due_with_meaning();
+                self.review.show(due);
+            }
             MenuAction::OpenLogs => {
                 if let Some(dir) = logging::log_dir() {
                     open_with_system(&[&dir.to_string_lossy()]);

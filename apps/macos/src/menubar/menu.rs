@@ -65,6 +65,12 @@ impl InputMenu {
         ));
         menu.addItem(&action_item(
             mtm,
+            "English Coach 复习…",
+            Some(MenuAction::OpenReview),
+            &target,
+        ));
+        menu.addItem(&action_item(
+            mtm,
             "打开日志目录",
             Some(MenuAction::OpenLogs),
             &target,

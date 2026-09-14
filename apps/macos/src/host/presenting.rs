@@ -104,6 +104,8 @@ impl Host {
             .flatten();
         if rows.is_empty() && self.session.preedit.is_none() {
             self.window.hide();
+            // 面板还开着就贴回光标行：英文是「常驻的一层」，不随候选窗收起
+            self.coach_reposition();
             return;
         }
         let pages = self.session.pages();
@@ -117,5 +119,6 @@ impl Host {
             status: self.status.clone(),
         };
         self.window.show(frame, self.anchor);
+        self.coach_reposition();
     }
 }

@@ -1,0 +1,18 @@
+[package]
+name = "qingjian-coach"
+description = "English Coach：上屏的中文句子 → 异步 AI 生成地道英文表达，供平台层持续显示"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+async-openai.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true

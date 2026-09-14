@@ -2186,6 +2186,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "qingjian-coach"
+version = "0.1.1"
+dependencies = [
+ "async-openai",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "qingjian-core"
 version = "0.1.1"
 dependencies = [
@@ -2291,6 +2303,7 @@ dependencies = [
  "objc2-core-foundation",
  "objc2-foundation",
  "objc2-input-method-kit",
+ "qingjian-coach",
  "qingjian-core",
  "qingjian-dictionary",
  "qingjian-learning",
@@ -2324,6 +2337,7 @@ dependencies = [
 name = "qingjian-platform"
 version = "0.1.1"
 dependencies = [
+ "qingjian-coach",
  "qingjian-core",
  "qingjian-dictionary",
  "qingjian-predict",

@@ -89,7 +89,16 @@ impl CoachProvider for OpenAICoach {
     ) -> Pin<Box<dyn Future<Output = Result<EnglishCoachResponse, CoachError>> + Send + '_>> {
         Box::pin(async move {
             let content = self.chat(&request).await?;
-            prompt::parse_reply(&content, request.max_phrases).map_err(CoachError::Format)
+            match prompt::parse_reply(&content, request.max_phrases) {
+                Ok(response) => Ok(response),
+                Err(error) => {
+                    tracing::warn!(%content, %error, "回复格式不对，展示原始回复");
+                    Ok(EnglishCoachResponse {
+                        english: content,
+                        phrases: Vec::new(),
+                    })
+                }
+            }
         })
     }
 }

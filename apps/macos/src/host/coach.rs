@@ -218,8 +218,8 @@ impl Host {
         self.coach_monitor.start();
     }
 
-    /// 轮询定时器回调：结果到了先校验句子与版本号，对得上才上面板；
-    /// 旧结果一律丢弃（用户已经改了字，盖上去就是错的）。
+    /// 轮询定时器回调：结果到了先校验句子号，同一句的旧版本仍显示
+    /// （差几个字翻译不会完全错，总比空白好）；不同句的旧结果才丢弃。
     pub fn poll_coach(&mut self) {
         let mut any = false;
         while let Some(outcome) = self.coach.as_mut().and_then(|s| s.poll()) {
@@ -228,12 +228,12 @@ impl Host {
                 self.coach_context.sentence_id(),
                 self.coach_context.version(),
             );
-            if (outcome.sentence_id, outcome.version) != current {
+            if outcome.sentence_id != self.coach_context.sentence_id() {
                 tracing::debug!(
                     sentence_id = outcome.sentence_id,
                     version = outcome.version,
                     ?current,
-                    "English Coach 结果已过期，丢弃"
+                    "English Coach 结果已过期（不同句），丢弃"
                 );
                 continue;
             }

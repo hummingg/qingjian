@@ -38,7 +38,7 @@ impl SentenceContext {
     /// 文本里出现句末标点就把这句子标记完结（惰性翻页，见结构体文档）。
     pub fn feed(&mut self, text: &str) -> Feed {
         let text = text.trim();
-        if !has_cjk(text) {
+        if !has_cjk(text) && !text.contains('（') && !text.contains('）') {
             return Feed {
                 changed: false,
                 completed: false,
@@ -49,7 +49,13 @@ impl SentenceContext {
         }
         self.version += 1;
         self.text.push_str(text);
-        self.completed = is_sentence_end(&self.text);
+        // 结尾空括号（）是用户手动标记打完了：剥掉再标记完结，翻译不带括号
+        if let Some(stripped) = self.text.strip_suffix("（）") {
+            self.text = stripped.to_owned();
+            self.completed = true;
+        } else {
+            self.completed = is_sentence_end(&self.text);
+        }
         Feed {
             changed: true,
             completed: self.completed,

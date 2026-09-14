@@ -73,7 +73,7 @@ https://github.com/user-attachments/assets/d145fde9-a641-4543-8b15-dd7a2685de3d
 - **被动学习**：翻译显示在候选窗下方，附带值得学的短语与 CEFR 等级，不打断输入
 - **主动复习**：菜单栏「English Coach 复习…」按 SM-2 算法调度到期短语
 - **AI Provider**：支持 OpenAI 兼容接口（DeepSeek、OpenAI 等），异步请求不阻塞中文输入
-- **隐私**：默认关闭；启用后只发送当前句子给用户指定的 AI Provider，不上传输入历史
+- **隐私**：Coach 默认 `enabled = false`；开启后只发送当前句子给用户指定的 AI Provider，不上传输入历史
 
 配置见 `~/Library/Application Support/Qingjian/config.toml` 的 `[coach]` 段。
 

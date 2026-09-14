@@ -58,6 +58,26 @@ https://github.com/user-attachments/assets/d145fde9-a641-4543-8b15-dd7a2685de3d
 
 ---
 
+## English Coach
+
+青简 English Coach 在你输入中文时，自动在候选窗下方显示对应的地道英文表达，并在菜单栏提供间隔复习（SRS）入口。
+
+```
+你输入：我稍后回复你
+         ↓
+🇬🇧 I'll get back to you later.
+   get back to somebody — 回复某人  [B1]
+```
+
+- **被动学习**：输入中文时自动显示英文 + 值得学的短语，不打断输入
+- **主动复习**：菜单栏「English Coach 复习…」按 SM-2 算法调度到期短语
+- **AI Provider**：支持 OpenAI 兼容接口（DeepSeek、OpenAI 等），异步请求不阻塞中文输入
+- **隐私**：默认关闭；启用后只发送当前句子给用户指定的 AI Provider，不上传输入历史
+
+配置见 `~/Library/Application Support/Qingjian/config.toml` 的 `[coach]` 段。
+
+---
+
 ## 语言模式
 
 用户可以设置：

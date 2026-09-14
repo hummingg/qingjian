@@ -49,12 +49,12 @@ impl SentenceContext {
         }
         self.version += 1;
         self.text.push_str(text);
-        // 结尾空括号（）是用户手动标记打完了：剥掉再标记完结，翻译不带括号
+        // 只有结尾空括号（）才标记完结（用户手动触发），句号等不再自动触发
         if let Some(stripped) = self.text.strip_suffix("（）") {
             self.text = stripped.to_owned();
             self.completed = true;
         } else {
-            self.completed = is_sentence_end(&self.text);
+            self.completed = false;
         }
         Feed {
             changed: true,
@@ -175,13 +175,13 @@ mod tests {
     }
 
     #[test]
-    fn sentence_final_punctuation_completes_without_rolling() {
+    fn empty_parentheses_complete_without_rolling() {
         let mut context = SentenceContext::default();
         context.feed("我稍后回复你");
-        let feed = context.feed("。");
+        let feed = context.feed("（）");
         assert!(feed.completed);
-        // 惰性翻页：完结的句子留在原地，壳还能拿它发请求
-        assert_eq!(context.text(), "我稍后回复你。");
+        // （）被剥掉，翻译不带括号
+        assert_eq!(context.text(), "我稍后回复你");
         assert_eq!(context.sentence_id(), 0);
         assert!(context.is_completed());
     }
@@ -189,10 +189,10 @@ mod tests {
     #[test]
     fn next_sentence_rolls_and_keeps_previous() {
         let mut context = SentenceContext::default();
-        context.feed("我稍后回复你。");
+        context.feed("我稍后回复你（）");
         assert!(context.feed("我们").changed);
         assert_eq!(context.text(), "我们");
-        assert_eq!(context.previous(), Some("我稍后回复你。"));
+        assert_eq!(context.previous(), Some("我稍后回复你"));
         assert_eq!(context.sentence_id(), 1);
         assert!(!context.is_completed());
     }

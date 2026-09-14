@@ -73,8 +73,7 @@ define_class!(
                 host::with(|h| {
                     h.cancel_prediction();
                     h.window.hide();
-                    // 焦点走了，手头的半句当完结发出去
-                    h.coach_break();
+
                 });
             });
             if done.is_none() {
@@ -581,7 +580,7 @@ impl QingjianInputController {
             } else if selector == sel!(insertNewline:) {
                 // 回车交给应用：文本流里是一个段落边界
                 host::with(|h| h.engine.note_passthrough('\n'));
-                host::with(|h| h.coach_break());
+
             }
             return false;
         }
@@ -605,8 +604,7 @@ impl QingjianInputController {
             return selector == sel!(insertNewline:);
         } else if selector == sel!(insertNewline:) {
             self.commit_raw(client);
-            // 回车把这句话交给了应用：手头的半句当完结发出去
-            host::with(|h| h.coach_break());
+
         } else if selector == sel!(cancelOperation:) || selector == sel!(complete:) {
             // TextEdit 等应用把 Esc 绑成 complete:（自动补全），也当作取消
             host::with(|h| {

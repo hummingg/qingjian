@@ -49,7 +49,7 @@ impl SentenceContext {
         }
         self.version += 1;
         self.text.push_str(text);
-        self.completed = self.text.chars().any(|c| SENTENCE_ENDINGS.contains(&c));
+        self.completed = is_sentence_end(&self.text);
         Feed {
             changed: true,
             completed: self.completed,
@@ -128,6 +128,11 @@ impl SentenceContext {
 /// 文本里有没有中日韩表意文字：英文直输、数字、半角标点都不值得送给 AI。
 fn has_cjk(text: &str) -> bool {
     text.chars().any(is_cjk)
+}
+
+/// 句子是否完结：句末标点，或结尾的空括号 `（）`（用户手动标记打完了）。
+fn is_sentence_end(text: &str) -> bool {
+    text.chars().any(|c| SENTENCE_ENDINGS.contains(&c)) || text.ends_with("（）")
 }
 
 fn is_cjk(c: char) -> bool {

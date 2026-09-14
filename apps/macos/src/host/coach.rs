@@ -189,11 +189,15 @@ impl Host {
         self.coach_reset();
     }
 
-    /// 把当前句子（或半句）交给后台线程；防抖由那边做。
+    /// 把当前句子交给后台线程。只有完结的句子（打了句号或 `（）`）才发请求，
+    /// 未完结的不发——省 token，等用户明确表示打完了再翻译。
     fn coach_submit(&mut self) {
         let Some(service) = &self.coach else {
             return;
         };
+        if !self.coach_context.is_completed() {
+            return;
+        }
         let config = &self.applied_coach;
         let request = qingjian_coach::EnglishCoachRequest {
             text: self.coach_context.text().to_owned(),

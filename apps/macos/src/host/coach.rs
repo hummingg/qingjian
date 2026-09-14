@@ -179,7 +179,7 @@ impl Host {
             return;
         }
         self.coach_monitor.stop();
-        self.coach_context = SentenceContext::default();
+        self.coach_context.clear();
         self.coach_frame = None;
         self.coach_panel.hide();
     }

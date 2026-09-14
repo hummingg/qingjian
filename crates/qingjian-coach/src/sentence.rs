@@ -80,6 +80,16 @@ impl SentenceContext {
         }
     }
 
+    /// 整段作废（切焦点、选中删除等）：清空文本与上一句，sentence_id 递增，
+    /// 保证后续新句子的 (sentence_id, version) 不会和作废前的旧请求撞上。
+    pub fn clear(&mut self) {
+        self.sentence_id += 1;
+        self.version += 1;
+        self.text.clear();
+        self.completed = false;
+        self.previous = None;
+    }
+
     /// 当前句子的文本。
     pub fn text(&self) -> &str {
         &self.text
